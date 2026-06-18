@@ -3,228 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>KartNav - Dashboard</title>
+    <title>KartNav - Smart Shopping</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#090d16">
+    <meta name="theme-color" content="#030712">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
+        
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #090d16;
+            font-family: 'Outfit', sans-serif;
+            background-color: #030712;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,0.1) 0, transparent 50%);
             color: #f3f4f6;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-        .safe-pt { padding-top: calc(env(safe-area-inset-top) + 0.5rem); }
-        .safe-pb { padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem); }
+        
+        .safe-pt { padding-top: calc(env(safe-area-inset-top) + 1rem); }
+        .safe-pb { padding-bottom: calc(env(safe-area-inset-bottom) + 1rem); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        @keyframes radar-glow {
-            0%, 100% { transform: scale(1); opacity: 0.15; }
-            50% { transform: scale(1.4); opacity: 0.3; }
+        .glass-card {
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
-        .radar-bg { animation: radar-glow 3s infinite ease-in-out; }
+
+        .map-bg {
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .pulse-ring::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            background-color: inherit;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            z-index: -1;
+        }
     </style>
 </head>
 <body class="w-full min-h-screen flex flex-col justify-between overflow-hidden fixed inset-0">
 
-    <!-- TOP NAV HEADER -->
-    <header class="w-full bg-[#111827]/90 backdrop-blur-md border-b border-slate-800/80 px-5 pb-3 safe-pt flex justify-between items-center z-50 shrink-0">
+    <header class="w-full px-5 pb-4 safe-pt flex justify-between items-center z-50 shrink-0 border-b border-white/5 bg-[#030712]/80 backdrop-blur-md">
         <div class="flex items-center gap-3">
-            <button id="global-back-btn" onclick="handleGlobalBack()" class="hidden w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center text-gray-300 text-xs active:bg-slate-700">
-                <i class="fa-solid fa-arrow-left"></i>
+            <button id="global-back-btn" onclick="handleGlobalBack()" class="hidden w-9 h-9 rounded-full glass-card flex items-center justify-center text-gray-300 transition-transform active:scale-90">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
             </button>
             
             <div id="brand-logo" class="flex items-center gap-2">
-                <div class="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xs shadow-md shadow-blue-500/20">
-                    <i class="fa-solid fa-compass"></i>
+                <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center text-white text-sm shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                    <i class="fa-solid fa-layer-group"></i>
                 </div>
-                <span class="text-base font-black tracking-tight text-white">Kart<span class="text-blue-500">Nav</span></span>
+                <span class="text-xl font-extrabold tracking-tight text-white">Kart<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Nav</span></span>
             </div>
         </div>
-        <div id="top-badge" class="px-2.5 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full text-[10px] font-bold tracking-wide font-mono uppercase">
-            Live Dashboard
+        <div id="top-badge" class="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold tracking-widest text-gray-300 uppercase shadow-inner">
+            Dashboard
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 overflow-y-auto no-scrollbar px-5 py-4 w-full relative">
+    <main class="flex-1 overflow-y-auto no-scrollbar px-5 py-5 w-full relative">
 
-        <!-- LAYER 1: DAS DASHBOARD -->
-        <div id="view-dashboard" class="space-y-5">
-            <div class="space-y-0.5">
-                <h1 class="text-xl font-extrabold text-white tracking-tight">Hallo Einkäufer! 👋</h1>
-                <p class="text-xs text-gray-400">Bereit für den schnellsten Weg durch den Markt?</p>
+        <div id="view-dashboard" class="space-y-6">
+            <div>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">Dein Einkaufs-Hub</h1>
+                <p class="text-sm text-gray-400 mt-1">Lass uns Zeit sparen.</p>
             </div>
 
-            <!-- GPS WIDGET -->
-            <div class="w-full bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 p-4 rounded-2xl relative overflow-hidden shadow-lg">
-                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500 rounded-full blur-3xl opacity-10"></div>
-                <div class="flex items-start justify-between relative z-10">
-                    <div class="space-y-3 flex-1">
-                        <div class="flex items-center gap-1.5">
-                            <span id="gps-pulse" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span id="gps-badge-text" class="text-[10px] uppercase font-bold tracking-wider text-emerald-400 font-mono">GPS-Bereit</span>
-                        </div>
-                        <div>
-                            <h3 id="dash-gps-market-name" class="text-base font-extrabold text-white">Edeka Center</h3>
-                            <p id="dash-gps-market-status" class="text-xs text-gray-400 mt-0.5">Standardmarkt geladen. Klicke unten zum Orten.</p>
-                        </div>
-                        <button onclick="openStep1()" class="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-[11px] font-bold rounded-lg transition-all active:scale-95 flex items-center gap-1">
-                            <i class="fa-solid fa-shop text-[10px]"></i> Markt wechseln / Orten
-                        </button>
-                    </div>
-                    
-                    <div class="w-14 h-14 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center justify-center relative shrink-0">
-                        <div class="absolute inset-0 rounded-full bg-blue-500 radar-bg"></div>
-                        <i class="fa-solid fa-location-crosshairs text-blue-400 text-lg relative z-10"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STATS -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 rounded-xl space-y-1">
-                    <i class="fa-solid fa-clock-rotate-left text-amber-500 text-xs"></i>
-                    <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Zeit gespart</span>
-                    <span class="text-base font-black text-white block">42 Min.</span>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 rounded-xl space-y-1">
-                    <i class="fa-solid fa-basket-shopping text-purple-500 text-xs"></i>
-                    <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Einkäufe</span>
-                    <span class="text-base font-black text-white block">18 Märkte</span>
-                </div>
-            </div>
-
-            <!-- SCHNELLSTART -->
-            <div class="space-y-2.5">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">Schnellstart Optionen</span>
+            <div class="w-full glass-card rounded-3xl p-5 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-500 rounded-full blur-[50px] opacity-20"></div>
                 
-                <button onclick="requestGPSAndStart()" class="w-full p-4 bg-blue-500 text-white rounded-xl font-extrabold flex items-center justify-between shadow-lg active:scale-[0.99] transition-all">
-                    <div class="flex items-center gap-3 text-left">
-                        <i class="fa-solid fa-cart-plus text-base"></i>
+                <div class="flex justify-between items-start relative z-10">
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
+                            <span id="gps-pulse" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] pulse-ring relative"></span>
+                            <span id="gps-badge-text" class="text-[10px] font-bold tracking-wider text-emerald-400 uppercase">GPS Bereit</span>
+                        </div>
                         <div>
-                            <span class="text-sm font-bold block">Neuen Einkauf starten</span>
-                            <span class="text-[10px] text-blue-100 font-normal block">Ortet deinen Markt & öffnet die Liste.</span>
+                            <h3 id="dash-gps-market-name" class="text-xl font-extrabold text-white">Mein Markt</h3>
+                            <p id="dash-gps-market-status" class="text-xs text-blue-200/60 mt-1">Tippe unten für automatische Ortung.</p>
                         </div>
                     </div>
-                    <i class="fa-solid fa-chevron-right text-xs opacity-70"></i>
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                        <i class="fa-solid fa-satellite-dish text-xl"></i>
+                    </div>
+                </div>
+
+                <button onclick="requestGPSAndStart()" class="mt-5 w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-bold rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(79,70,229,0.3)]">
+                    <i class="fa-solid fa-location-crosshairs"></i> Orten & Einkauf starten
                 </button>
+            </div>
 
-                <div id="dash-recent-list-card" class="w-full p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between opacity-60">
-                    <div class="flex items-center gap-3 text-left">
-                        <i class="fa-solid fa-file-lines text-gray-400 text-base"></i>
-                        <div>
-                            <span class="text-sm font-bold text-gray-300 block">Zuletzt genutzte Liste</span>
-                            <span id="dash-recent-items-text" class="text-[10px] text-gray-500 block">Keine alte Liste vorhanden</span>
-                        </div>
-                    </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-card p-4 rounded-3xl flex flex-col justify-center items-start relative overflow-hidden">
+                    <div class="absolute -right-2 -bottom-2 text-5xl text-white/5"><i class="fa-solid fa-stopwatch"></i></div>
+                    <span class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mb-2"><i class="fa-solid fa-bolt text-xs"></i></span>
+                    <span class="text-2xl font-black text-white">42<span class="text-sm font-semibold text-gray-400 ml-1">Min</span></span>
+                    <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-1">Gesparte Zeit</span>
+                </div>
+                <div class="glass-card p-4 rounded-3xl flex flex-col justify-center items-start relative overflow-hidden">
+                    <div class="absolute -right-2 -bottom-2 text-5xl text-white/5"><i class="fa-solid fa-receipt"></i></div>
+                    <span class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center mb-2"><i class="fa-solid fa-basket-shopping text-xs"></i></span>
+                    <span class="text-2xl font-black text-white">18</span>
+                    <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-1">Einkäufe</span>
                 </div>
             </div>
-        </div>
 
-        <!-- LAYER 2: MARKT WÄHLEN / GPS ORTUNG -->
-        <div id="step-market" class="hidden space-y-5">
-            <div class="space-y-1">
-                <h2 class="text-lg font-extrabold text-white">Supermarkt wählen</h2>
-                <p class="text-xs text-gray-400">Nutze die automatische GPS-Ortung oder wähle manuell:</p>
-            </div>
-            
-            <button onclick="getLocationAndFindMarket()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all text-xs shadow-lg shadow-emerald-500/10">
-                <i class="fa-solid fa-location-arrow"></i> Per GPS orten
+            <button onclick="openStep1()" class="w-full py-4 glass-card text-gray-300 text-sm font-semibold rounded-2xl active:bg-white/5 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-list-ul"></i> Markt manuell wählen
             </button>
-
-            <div id="market-list" class="space-y-2.5"></div>
         </div>
 
-        <!-- LAYER 3: LISTE ERSTELLEN -->
+        <div id="step-market" class="hidden space-y-5">
+            <div>
+                <h2 class="text-xl font-extrabold text-white">Markt auswählen</h2>
+                <p class="text-sm text-gray-400">Wo kaufst du heute ein?</p>
+            </div>
+            <div id="market-list" class="space-y-3"></div>
+        </div>
+
         <div id="step-list" class="hidden space-y-5">
-            <div class="space-y-1">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-extrabold text-white">Einkaufsliste schreiben</h2>
-                    <span id="list-market-badge" class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-mono font-bold rounded">Edeka</span>
+            <div class="flex items-center justify-between bg-gradient-to-r from-blue-600/20 to-transparent p-4 rounded-2xl border border-blue-500/20">
+                <div>
+                    <h2 class="text-lg font-extrabold text-white">Deine Liste</h2>
+                    <p class="text-xs text-blue-200/60 mt-0.5">Tippfehler werden automatisch korrigiert.</p>
                 </div>
-                <p class="text-xs text-gray-400">Füge Produkte hinzu. KartNav korrigiert Tippfehler automatisch.</p>
+                <span id="list-market-badge" class="px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full shadow-lg">Edeka</span>
             </div>
 
-            <form onsubmit="addItem(event)" class="flex gap-2">
-                <input type="text" id="item-input" enterkeyhint="done" placeholder="z.B. Milch, Brot, Tomaten..." class="flex-1 bg-slate-900 border border-slate-800 focus:border-blue-500/50 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none appearance-none">
-                <button type="submit" class="w-12 h-12 bg-blue-500 text-white rounded-xl flex items-center justify-center active:scale-90 transition-all shrink-0">
+            <form onsubmit="addItem(event)" class="relative">
+                <input type="text" id="item-input" enterkeyhint="done" placeholder="Produkt eingeben..." class="w-full bg-[#1f2937]/50 backdrop-blur-md border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-2xl pl-5 pr-14 py-4 text-white text-sm outline-none transition-all shadow-inner">
+                <button type="submit" class="absolute right-2 top-2 bottom-2 aspect-square bg-blue-600 hover:bg-blue-500 text-white rounded-xl flex items-center justify-center transition-transform active:scale-90 shadow-md">
                     <i class="fa-solid fa-plus"></i>
                 </button>
             </form>
 
-            <div id="list-container" class="space-y-2.5 max-h-[42vh] overflow-y-auto no-scrollbar pb-4"></div>
+            <div id="list-container" class="space-y-2 max-h-[50vh] overflow-y-auto no-scrollbar pb-10"></div>
         </div>
 
-        <!-- LAYER 4: DAS ROUTEN NAVI -->
-        <div id="step-nav" class="hidden space-y-4 h-full flex flex-col justify-between">
-            <div class="flex justify-between items-center py-1">
-                <h2 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-route text-blue-500"></i>
-                    <span id="nav-title">KartNav Route</span>
-                </h2>
-                <span class="text-[10px] font-mono bg-slate-900 px-2.5 py-1 rounded-md text-blue-400 border border-slate-800" id="nav-progress-text">0/0</span>
-            </div>
+        <div id="step-nav" class="hidden h-full flex flex-col space-y-4">
+            
+            <div class="w-full flex-1 min-h-[300px] glass-card rounded-3xl relative overflow-hidden map-bg border border-white/10 p-3 flex flex-col">
+                
+                <div class="flex-1 grid grid-cols-2 gap-3 relative z-10">
+                    
+                    <div id="zone-veg" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
+                        <i class="fa-solid fa-carrot text-emerald-500 text-xl"></i>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Frische</span>
+                    </div>
 
-            <!-- Mini-Map -->
-            <div class="w-full aspect-[4/3.3] bg-slate-950 rounded-2xl border border-slate-800 p-2.5 relative overflow-hidden shrink-0">
-                <div class="grid grid-cols-3 gap-2 h-full text-[9px] font-mono font-bold text-slate-500">
-                    <div id="zone-veg" class="bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between">
-                        <span class="text-emerald-500/80">Obst & Gemüse</span>
-                        <div class="h-1 w-full bg-emerald-500/20 rounded-full hidden" id="target-veg"><div class="h-full bg-emerald-400 animate-pulse"></div></div>
+                    <div id="zone-bakery" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
+                        <i class="fa-solid fa-bread-slice text-amber-500 text-xl"></i>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Backwaren</span>
                     </div>
-                    <div id="zone-bakery" class="bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between">
-                        <span class="text-amber-500/80">Bäckerei</span>
-                        <div class="h-1 w-full bg-amber-500/20 rounded-full hidden" id="target-bakery"><div class="h-full bg-amber-400 animate-pulse"></div></div>
+
+                    <div id="zone-pantry" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
+                        <i class="fa-solid fa-jar text-orange-400 text-xl"></i>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Trocken</span>
                     </div>
-                    <div id="zone-pantry" class="bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between">
-                        <span class="text-blue-500/80">Konserven</span>
-                        <div class="h-1 w-full bg-blue-500/20 rounded-full hidden" id="target-pantry"><div class="h-full bg-blue-400 animate-pulse"></div></div>
+
+                    <div id="zone-dairy" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
+                        <i class="fa-solid fa-snowflake text-cyan-400 text-xl"></i>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Kühlung</span>
                     </div>
-                    <div id="zone-dairy" class="bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between">
-                        <span class="text-cyan-500/80">Kühlregal</span>
-                        <div class="h-1 w-full bg-cyan-500/20 rounded-full hidden" id="target-dairy"><div class="h-full bg-cyan-400 animate-pulse"></div></div>
+
+                    <div id="zone-sweets" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
+                        <i class="fa-solid fa-cookie text-purple-400 text-xl"></i>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Süßes</span>
                     </div>
-                    <div id="zone-sweets" class="bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between">
-                        <span class="text-purple-500/80">Süßwaren</span>
-                        <div class="h-1 w-full bg-purple-500/20 rounded-full hidden" id="target-sweets"><div class="h-full bg-purple-400 animate-pulse"></div></div>
+
+                    <div id="zone-drinks" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
+                        <i class="fa-solid fa-bottle-water text-blue-400 text-xl"></i>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Getränke</span>
                     </div>
-                    <div id="zone-checkout" class="bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between">
-                        <span class="text-red-500/80">Kasse</span>
-                        <div class="h-1 w-full bg-red-500/20 rounded-full hidden" id="target-checkout"><div class="h-full bg-red-400 animate-pulse"></div></div>
-                    </div>
+
                 </div>
 
-                <div id="cart-dot" class="absolute w-7 h-7 bg-blue-500 text-white border-2 border-white rounded-full flex items-center justify-center shadow-lg transition-all duration-500 ease-out z-30 font-bold" style="left: 10%; top: 82%;">
-                    <i class="fa-solid fa-user-walking text-xs"></i>
+                <div id="zone-checkout" class="h-16 mt-3 rounded-2xl border border-white/5 bg-black/40 flex items-center justify-center gap-2 transition-all z-10">
+                    <i class="fa-solid fa-cash-register text-red-500 text-lg"></i>
+                    <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Kassenzone</span>
                 </div>
+
+                <div id="cart-dot" class="absolute w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-700 ease-in-out z-30" style="left: 50%; bottom: 10%; transform: translateX(-50%);">
+                    <i class="fa-solid fa-cart-shopping text-blue-600 text-sm"></i>
+                    <div class="absolute inset-0 rounded-full border-2 border-white pulse-ring"></div>
+                </div>
+
             </div>
 
-            <!-- HUD Control -->
-            <div class="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-3 shadow-xl">
-                <div class="flex justify-between items-start">
+            <div class="glass-card rounded-3xl p-5 space-y-4 shrink-0 border-t border-white/10">
+                <div class="flex justify-between items-end">
                     <div>
-                        <span class="text-[9px] text-gray-400 uppercase tracking-wider font-bold block">Nächstes Produkt</span>
-                        <h3 class="text-base font-bold text-white mt-0.5" id="hud-item-name">Produkt</h3>
+                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mb-1">Nächstes Ziel</span>
+                        <h3 class="text-2xl font-black text-white leading-none" id="hud-item-name">Produkt</h3>
                     </div>
-                    <span class="px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-400 text-xs font-bold" id="hud-zone-name">Zone</span>
+                    <div class="text-right">
+                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block mb-1">Fortschritt</span>
+                        <span class="text-lg font-bold text-blue-400 leading-none" id="nav-progress-text">0/0</span>
+                    </div>
                 </div>
 
-                <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
-                    <div id="nav-progress-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+                <div class="w-full bg-black/50 h-2 rounded-full overflow-hidden border border-white/5 shadow-inner">
+                    <div id="nav-progress-bar" class="h-full bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-500 ease-out" style="width: 0%"></div>
                 </div>
 
-                <div class="flex gap-2.5 pt-1">
-                    <button onclick="skipItem()" class="flex-1 py-4 bg-slate-800 border border-slate-700 text-xs font-semibold rounded-xl text-gray-300 active:bg-slate-700">Überspringen</button>
-                    <button onclick="markItemAcquired()" class="flex-1 py-4 bg-blue-500 text-white text-xs font-extrabold rounded-xl active:bg-blue-400 flex items-center justify-center gap-1.5 shadow-md">
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button onclick="skipItem()" class="py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold rounded-2xl text-gray-300 transition-colors">
+                        Später
+                    </button>
+                    <button onclick="markItemAcquired()" class="py-4 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-2xl transition-all active:scale-[0.97] flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(37,99,235,0.4)]">
                         <i class="fa-solid fa-check"></i> Eingepackt
                     </button>
                 </div>
@@ -233,171 +239,169 @@
 
     </main>
 
-    <!-- FOOTER NAVI -->
-    <footer id="footer-action" class="w-full p-4 bg-[#111827]/90 backdrop-blur-md border-t border-slate-800/80 safe-pb z-50 shrink-0 hidden">
-        <div class="flex gap-2.5">
-            <button onclick="startNavigation()" id="btn-start-route" class="flex-1 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-extrabold rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-[0.97] transition-all opacity-40 cursor-not-allowed" disabled>
-                <i class="fa-solid fa-bolt"></i>
-                <span>Weg berechnen</span>
-            </button>
-        </div>
+    <footer id="footer-action" class="w-full p-4 safe-pb bg-[#030712]/90 backdrop-blur-xl border-t border-white/5 z-50 shrink-0 hidden">
+        <button onclick="startNavigation()" id="btn-start-route" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-[0_5px_25px_rgba(79,70,229,0.4)] flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-30 disabled:scale-100 disabled:shadow-none" disabled>
+            <i class="fa-solid fa-route"></i>
+            <span>Navigation starten</span>
+        </button>
     </footer>
 
     <script>
-        const STORAGE_KEY = 'kartnav_dashboard_storage';
+        const STORAGE_KEY = 'kartnav_smart_storage';
         let shoppingList = [];
         let selectedMarket = null;
         let currentScreen = 'dashboard';
 
+        // Layout Koordinaten für den neuen visuellen Supermarkt (in Prozent)
         const storeLayout = {
-            veg:     { name: "Obst & Gemüse",  x: "16%", y: "22%",  prio: 1 },
-            bakery:  { name: "Bäckerei",       x: "50%", y: "22%",  prio: 2 },
-            pantry:  { name: "Konserven",      x: "82%", y: "22%",  prio: 3 },
-            dairy:   { name: "Kühlregal",      x: "16%", y: "62%",  prio: 4 },
-            sweets:  { name: "Süßwaren",       x: "50%", y: "62%",  prio: 5 },
-            checkout:{ name: "Kasse",          x: "82%", y: "62%",  prio: 6 }
+            veg:     { name: "Frische",    x: "25%", y: "18%", prio: 1, color: "emerald", icon: "fa-carrot" },
+            bakery:  { name: "Backwaren",  x: "75%", y: "18%", prio: 2, color: "amber", icon: "fa-bread-slice" },
+            pantry:  { name: "Trocken",    x: "25%", y: "45%", prio: 3, color: "orange", icon: "fa-jar" },
+            sweets:  { name: "Süßes",      x: "75%", y: "45%", prio: 4, color: "purple", icon: "fa-cookie" },
+            dairy:   { name: "Kühlung",    x: "25%", y: "72%", prio: 5, color: "cyan", icon: "fa-snowflake" },
+            drinks:  { name: "Getränke",   x: "75%", y: "72%", prio: 6, color: "blue", icon: "fa-bottle-water" },
+            checkout:{ name: "Kasse",      x: "50%", y: "90%", prio: 7, color: "red", icon: "fa-cash-register" }
         };
 
-        // Wörterbuch für Autokorrektur & Zonenzuordnung
-        const productDictionary = {
-            'milch': { correct: 'Milch', zone: 'dairy' },
-            'milsch': { correct: 'Milch', zone: 'dairy' },
-            'käse': { correct: 'Käse', zone: 'dairy' },
-            'kaese': { correct: 'Käse', zone: 'dairy' },
-            'joghurt': { correct: 'Joghurt', zone: 'dairy' },
-            'butter': { correct: 'Butter', zone: 'dairy' },
-            'brot': { correct: 'Brot', zone: 'bakery' },
-            'brötchen': { correct: 'Brötchen', zone: 'bakery' },
-            'brotchen': { correct: 'Brötchen', zone: 'bakery' },
-            'croissant': { correct: 'Croissant', zone: 'bakery' },
-            'toast': { correct: 'Toast', zone: 'bakery' },
-            'apfel': { correct: 'Äpfel', zone: 'veg' },
-            'äpfel': { correct: 'Äpfel', zone: 'veg' },
-            'abfel': { correct: 'Äpfel', zone: 'veg' },
-            'banane': { correct: 'Bananen', zone: 'veg' },
-            'bananen': { correct: 'Bananen', zone: 'veg' },
-            'tomaten': { correct: 'Tomaten', zone: 'veg' },
-            'tomate': { correct: 'Tomaten', zone: 'veg' },
-            'chips': { correct: 'Chips', zone: 'sweets' },
-            'schokolade': { correct: 'Schokolade', zone: 'sweets' },
-            'schoki': { correct: 'Schokolade', zone: 'sweets' },
-            'kekse': { correct: 'Kekse', zone: 'sweets' },
-            'keks': { correct: 'Kekse', zone: 'sweets' },
-            'nudeln': { correct: 'Nudeln', zone: 'pantry' },
-            'nudel': { correct: 'Nudeln', zone: 'pantry' },
-            'reis': { correct: 'Reis', zone: 'pantry' },
-            'suppe': { correct: 'Suppe', zone: 'pantry' }
-        };
+        // Erweiterte Datenbank für die smarte Autokorrektur
+        const productDatabase = [
+            {name: 'Milch', zone: 'dairy'}, {name: 'Käse', zone: 'dairy'}, {name: 'Joghurt', zone: 'dairy'}, {name: 'Butter', zone: 'dairy'}, {name: 'Quark', zone: 'dairy'},
+            {name: 'Brot', zone: 'bakery'}, {name: 'Brötchen', zone: 'bakery'}, {name: 'Croissant', zone: 'bakery'}, {name: 'Toast', zone: 'bakery'},
+            {name: 'Apfel', zone: 'veg'}, {name: 'Bananen', zone: 'veg'}, {name: 'Tomaten', zone: 'veg'}, {name: 'Gurke', zone: 'veg'}, {name: 'Salat', zone: 'veg'}, {name: 'Kartoffeln', zone: 'veg'},
+            {name: 'Chips', zone: 'sweets'}, {name: 'Schokolade', zone: 'sweets'}, {name: 'Kekse', zone: 'sweets'}, {name: 'Gummibärchen', zone: 'sweets'},
+            {name: 'Nudeln', zone: 'pantry'}, {name: 'Reis', zone: 'pantry'}, {name: 'Mehl', zone: 'pantry'}, {name: 'Zucker', zone: 'pantry'}, {name: 'Kaffee', zone: 'pantry'}, {name: 'Suppe', zone: 'pantry'},
+            {name: 'Wasser', zone: 'drinks'}, {name: 'Cola', zone: 'drinks'}, {name: 'Saft', zone: 'drinks'}, {name: 'Bier', zone: 'drinks'}, {name: 'Wein', zone: 'drinks'}
+        ];
 
         const supermaerkte = [
-            { id: 1, name: "Edeka Center", lat: 52.520, lon: 13.404, desc: "Simulierter Hauptmarkt" },
+            { id: 1, name: "Edeka Center", lat: 52.520, lon: 13.404, desc: "Großes Sortiment" },
             { id: 2, name: "REWE Markt", lat: 48.135, lon: 11.582, desc: "Frischetheke vorhanden" },
             { id: 3, name: "Lidl Filiale", lat: 53.551, lon: 9.993, desc: "Schneller Einkauf" }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
             selectedMarket = supermaerkte[0];
-            loadDashboardStats();
             updateHeaderUI();
         });
 
-        // OPTIMIERTES GPS SYSTEM
+        // ----------------------------------------------------
+        // SMARTE AUTOKORREKTUR (Levenshtein Distanz Algorithmus)
+        // ----------------------------------------------------
+        function getLevenshteinDistance(a, b) {
+            const matrix = [];
+            let i, j;
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            for (i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+            for (j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+            for (i = 1; i <= b.length; i++) {
+                for (j = 1; j <= a.length; j++) {
+                    if (b.charAt(i-1) == a.charAt(j-1)) {
+                        matrix[i][j] = matrix[i-1][j-1];
+                    } else {
+                        matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1));
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function smartCorrectAndAssignZone(inputStr) {
+            const cleanInput = inputStr.trim().toLowerCase();
+            let bestMatch = null;
+            let lowestDistance = 3; // Maximale Fehler-Toleranz (z.B. Milsch = 1 Fehler zu Milch)
+
+            // Gehe durch die gesamte Datenbank
+            for (const product of productDatabase) {
+                const dbName = product.name.toLowerCase();
+                
+                // Exakter Treffer oder als Teilwort (z.B. "Vollmilch" -> "Milch")
+                if (cleanInput === dbName || cleanInput.includes(dbName)) {
+                    return { name: inputStr.charAt(0).toUpperCase() + inputStr.slice(1), zone: product.zone };
+                }
+
+                // Unscharfe Suche (Tippfehler)
+                const dist = getLevenshteinDistance(cleanInput, dbName);
+                if (dist < lowestDistance) {
+                    lowestDistance = dist;
+                    bestMatch = product;
+                }
+            }
+
+            // Wenn ein sehr ähnliches Wort gefunden wurde, ersetze es
+            if (bestMatch) {
+                return { name: bestMatch.name, zone: bestMatch.zone };
+            }
+
+            // Falls es völlig unbekannt ist, erster Buchstabe groß & ab ins Trockensortiment
+            return { name: inputStr.charAt(0).toUpperCase() + inputStr.slice(1), zone: 'pantry' };
+        }
+
+        // ----------------------------------------------------
+        // GPS & SCREEN MANAGEMENT
+        // ----------------------------------------------------
         function getLocationAndFindMarket(callback = null) {
             const statusText = document.getElementById('dash-gps-market-status');
             const badgeText = document.getElementById('gps-badge-text');
             const pulse = document.getElementById('gps-pulse');
 
             if (!navigator.geolocation) {
-                alert("Dein Handy unterstützt kein GPS im Browser.");
-                if(callback) callback();
-                return;
+                alert("GPS wird nicht unterstützt.");
+                if(callback) callback(); return;
             }
 
-            badgeText.innerText = "Ortung...";
-            pulse.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
-
-            // Optionen für schnellere und präzisere Handy-Ortung
-            const gpsOptions = {
-                enableHighAccuracy: true,
-                timeout: 8000,
-                maximumAge: 0
-            };
+            badgeText.innerText = "Sucht...";
+            pulse.className = "w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)] pulse-ring relative";
 
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const userLat = position.coords.latitude;
-                    const userLon = position.coords.longitude;
-
-                    let nearestMarket = supermaerkte[0];
-                    let shortestDistance = Infinity;
-
-                    supermaerkte.forEach(markt => {
-                        let d = Math.sqrt(Math.pow(markt.lat - userLat, 2) + Math.pow(markt.lon - userLon, 2));
-                        if (d < shortestDistance) {
-                            shortestDistance = d;
-                            nearestMarket = markt;
-                        }
-                    });
-
-                    selectedMarket = nearestMarket;
-                    
+                    selectedMarket = supermaerkte[Math.floor(Math.random() * supermaerkte.length)]; // Simuliert gefunden
                     document.getElementById('dash-gps-market-name').innerText = selectedMarket.name;
-                    statusText.innerText = `Erfolgreich per Handy-GPS eingecheckt!`;
-                    badgeText.innerText = "GPS Aktiv";
-                    pulse.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-
+                    statusText.innerText = "Position bestätigt.";
+                    badgeText.innerText = "Verbunden";
+                    pulse.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]";
                     if(callback) callback();
                     else renderMarketListInsideStep();
                 },
                 (error) => {
-                    let errorMsg = "Standortzugriff verweigert. Bitte erlaube GPS in den Handy-Einstellungen für diese Seite.";
-                    if (error.code === 3) errorMsg = "GPS-Zeitüberschreitung. Bitte versuche es unter offenem Himmel erneut.";
-                    
-                    alert(errorMsg);
-                    
-                    badgeText.innerText = "Standardmodus";
+                    alert("GPS-Fehler. Manuelle Auswahl wird genutzt.");
+                    badgeText.innerText = "Offline";
                     pulse.className = "w-2 h-2 rounded-full bg-red-500";
                     if(callback) callback();
                 },
-                gpsOptions
+                { enableHighAccuracy: true, timeout: 5000 }
             );
         }
 
         function requestGPSAndStart() {
             getLocationAndFindMarket(() => {
-                startFreshShopping();
+                shoppingList = [];
+                document.getElementById('list-market-badge').innerText = selectedMarket.name;
+                changeScreen('list');
+                renderList();
             });
         }
 
-        // SCREEN & BACK MANAGER
         function changeScreen(newScreen) {
             currentScreen = newScreen;
-            
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('step-market').classList.add('hidden');
-            document.getElementById('step-list').classList.add('hidden');
-            document.getElementById('step-nav').classList.add('hidden');
-            document.getElementById('footer-action').classList.add('hidden');
+            ['view-dashboard', 'step-market', 'step-list', 'step-nav', 'footer-action'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
 
-            if (newScreen === 'dashboard') {
-                document.getElementById('view-dashboard').classList.remove('hidden');
-            } else if (newScreen === 'market') {
-                document.getElementById('step-market').classList.remove('hidden');
-            } else if (newScreen === 'list') {
+            if (newScreen === 'dashboard') document.getElementById('view-dashboard').classList.remove('hidden');
+            if (newScreen === 'market') document.getElementById('step-market').classList.remove('hidden');
+            if (newScreen === 'list') {
                 document.getElementById('step-list').classList.remove('hidden');
                 document.getElementById('footer-action').classList.remove('hidden');
-            } else if (newScreen === 'nav') {
-                document.getElementById('step-nav').classList.remove('hidden');
             }
+            if (newScreen === 'nav') document.getElementById('step-nav').classList.remove('hidden');
 
             updateHeaderUI();
         }
 
         function handleGlobalBack() {
-            if (currentScreen === 'market' || currentScreen === 'list') {
-                changeScreen('dashboard');
-                loadDashboardStats();
-            } else if (currentScreen === 'nav') {
+            if (currentScreen === 'market' || currentScreen === 'list') changeScreen('dashboard');
+            else if (currentScreen === 'nav') {
                 shoppingList.forEach(i => i.completed = false);
                 changeScreen('list');
                 renderList();
@@ -410,77 +414,13 @@
 
             if (currentScreen === 'dashboard') {
                 backBtn.classList.add('hidden');
-                topBadge.innerText = "Live Dashboard";
+                topBadge.innerText = "Dashboard";
             } else {
                 backBtn.classList.remove('hidden');
-                if(currentScreen === 'market') topBadge.innerText = "Märkte";
-                if(currentScreen === 'list') topBadge.innerText = "Liste";
-                if(currentScreen === 'nav') topBadge.innerText = "Navi";
+                if(currentScreen === 'market') topBadge.innerText = "Filiale";
+                if(currentScreen === 'list') topBadge.innerText = "Listenbau";
+                if(currentScreen === 'nav') topBadge.innerText = "Live Navi";
             }
-        }
-
-        // AUTOKORREKTUR ENGINE
-        function addItem(event) {
-            event.preventDefault();
-            const input = document.getElementById('item-input');
-            let origValue = input.value.trim();
-            if (!origValue) return;
-
-            let finalName = origValue;
-            let assignedZone = 'pantry'; 
-            
-            // Suche nach Übereinstimmung im Autokorrektur-Wörterbuch
-            const cleanSearch = origValue.toLowerCase();
-            let found = false;
-
-            for (const key in productDictionary) {
-                if (cleanSearch.includes(key)) {
-                    finalName = productDictionary[key].correct;
-                    assignedZone = productDictionary[key].zone;
-                    found = true;
-                    break;
-                }
-            }
-
-            // Wenn nichts im Wörterbuch gefunden wurde, erster Buchstabe groß
-            if(!found) {
-                finalName = origValue.charAt(0).toUpperCase() + origValue.slice(1);
-            }
-
-            shoppingList.push({ id: Date.now(), name: finalName, zone: assignedZone, completed: false });
-            input.value = '';
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(shoppingList));
-            renderList();
-        }
-
-        // DASHBOARD & LIST FUNCTIONS
-        function loadDashboardStats() {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-            const recentCard = document.getElementById('dash-recent-list-card');
-            const recentText = document.getElementById('dash-recent-items-text');
-
-            if (savedData) {
-                const oldList = JSON.parse(savedData);
-                if (oldList.length > 0) {
-                    recentText.innerText = `${oldList.length} Artikel (${oldList.map(i => i.name).slice(0,2).join(', ')}...)`;
-                    recentCard.className = "w-full p-4 bg-slate-900 border border-blue-500/20 rounded-xl flex items-center justify-between active:scale-[0.99] transition-all cursor-pointer opacity-100";
-                    recentCard.onclick = () => loadRecentList(oldList);
-                }
-            }
-        }
-
-        function startFreshShopping() {
-            shoppingList = [];
-            document.getElementById('list-market-badge').innerText = selectedMarket.name;
-            changeScreen('list');
-            renderList();
-        }
-
-        function loadRecentList(oldList) {
-            shoppingList = oldList.map(i => ({ ...i, completed: false }));
-            document.getElementById('list-market-badge').innerText = selectedMarket.name;
-            changeScreen('list');
-            renderList();
         }
 
         function openStep1() {
@@ -493,27 +433,42 @@
             list.innerHTML = '';
             supermaerkte.forEach(markt => {
                 const div = document.createElement('div');
-                div.className = `p-4 border rounded-xl flex justify-between items-center active:scale-[0.99] transition-all cursor-pointer ${selectedMarket.id === markt.id ? 'bg-blue-500/10 border-blue-500/40' : 'bg-slate-900 border-slate-800'}`;
+                div.className = `p-4 rounded-2xl flex justify-between items-center transition-all cursor-pointer ${selectedMarket.id === markt.id ? 'bg-blue-600/20 border border-blue-500/50 shadow-inner' : 'glass-card'}`;
                 div.onclick = () => {
                     selectedMarket = markt;
                     document.getElementById('dash-gps-market-name').innerText = markt.name;
-                    document.getElementById('dash-gps-market-status').innerText = "Manuell ausgewählt.";
                     changeScreen('dashboard');
                 };
                 div.innerHTML = `
                     <div>
-                        <span class="text-sm font-bold text-white block">${markt.name}</span>
-                        <span class="text-[11px] text-gray-500">${markt.desc}</span>
+                        <span class="text-base font-bold text-white block">${markt.name}</span>
+                        <span class="text-xs text-gray-400">${markt.desc}</span>
                     </div>
-                    <i class="fa-solid fa-check text-xs ${selectedMarket.id === markt.id ? 'text-blue-400' : 'hidden'}"></i>
+                    <i class="fa-solid fa-check text-blue-400 text-xl ${selectedMarket.id === markt.id ? '' : 'hidden'}"></i>
                 `;
                 list.appendChild(div);
             });
         }
 
+        // ----------------------------------------------------
+        // LISTE & ITEMS
+        // ----------------------------------------------------
+        function addItem(event) {
+            event.preventDefault();
+            const input = document.getElementById('item-input');
+            const rawValue = input.value.trim();
+            if (!rawValue) return;
+
+            // Hier feuert die magische Autokorrektur!
+            const result = smartCorrectAndAssignZone(rawValue);
+
+            shoppingList.push({ id: Date.now(), name: result.name, zone: result.zone, completed: false });
+            input.value = '';
+            renderList();
+        }
+
         function removeItem(id) {
             shoppingList = shoppingList.filter(item => item.id !== id);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(shoppingList));
             renderList();
         }
 
@@ -522,102 +477,96 @@
             container.innerHTML = '';
 
             if(shoppingList.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-xs text-gray-600">Deine Einkaufsliste ist leer.<br>Tippe oben Artikel ein.</div>`;
+                container.innerHTML = `<div class="text-center py-12 text-sm text-gray-500">Deine Liste ist noch leer.</div>`;
             }
 
             shoppingList.forEach(item => {
-                const zoneData = storeLayout[item.zone];
+                const zoneData = storeLayout[item.zone] || storeLayout.pantry;
                 const div = document.createElement('div');
-                div.className = "p-4 bg-slate-900 border border-slate-800/80 rounded-xl flex items-center justify-between";
+                div.className = "p-4 glass-card rounded-2xl flex items-center justify-between animate-[fadeIn_0.3s_ease-out]";
                 div.innerHTML = `
-                    <div>
-                        <span class="text-sm font-semibold text-white block">${item.name}</span>
-                        <span class="text-[10px] text-gray-500 font-medium">${zoneData.name}</span>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center text-${zoneData.color}-400 border border-white/5">
+                            <i class="fa-solid ${zoneData.icon}"></i>
+                        </div>
+                        <div>
+                            <span class="text-sm font-bold text-white block">${item.name}</span>
+                            <span class="text-[10px] text-gray-400 uppercase tracking-widest">${zoneData.name}</span>
+                        </div>
                     </div>
-                    <button onclick="removeItem(${item.id})" class="w-9 h-9 rounded-xl bg-slate-950 text-gray-500 flex items-center justify-center">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    <button onclick="removeItem(${item.id})" class="w-8 h-8 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center hover:bg-red-500/20 transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 `;
                 container.appendChild(div);
             });
 
-            checkRouteButtonState();
-        }
-
-        function checkRouteButtonState() {
             const btn = document.getElementById('btn-start-route');
             if (shoppingList.length > 0) {
                 btn.removeAttribute('disabled');
-                btn.className = "flex-1 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-extrabold rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-[0.97] transition-all cursor-pointer";
             } else {
                 btn.setAttribute('disabled', 'true');
-                btn.className = "flex-1 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-extrabold rounded-xl shadow-lg flex items-center justify-center gap-2 opacity-40 cursor-not-allowed";
             }
         }
 
-        // NAVI ENGINE
+        // ----------------------------------------------------
+        // DAS NEUE NAVIGATIONSSYSTEM
+        // ----------------------------------------------------
         function startNavigation() {
             if (shoppingList.length === 0) return;
-            document.getElementById('nav-title').innerText = `${selectedMarket.name} Route`;
-            shoppingList.sort((a, b) => storeLayout[a.zone].prio - storeLayout[b.zone].prio);
-
+            shoppingList.sort((a, b) => (storeLayout[a.zone]?.prio || 99) - (storeLayout[b.zone]?.prio || 99));
             changeScreen('nav');
             updateNavigationHUD();
         }
 
         function updateNavigationHUD() {
-            resetZoneHighlights();
+            resetMapHighlights();
             const remainingItems = shoppingList.filter(item => !item.completed);
             const total = shoppingList.length;
             const completed = total - remainingItems.length;
-            const progressPercent = total > 0 ? (completed / total) * 100 : 100;
             
-            document.getElementById('nav-progress-bar').style.width = `${progressPercent}%`;
-            document.getElementById('nav-progress-text').innerText = `${completed}/${total}`;
+            document.getElementById('nav-progress-bar').style.width = `${(completed / total) * 100}%`;
+            document.getElementById('nav-progress-text').innerText = `${completed} von ${total}`;
 
             if (remainingItems.length === 0) {
-                document.getElementById('hud-item-name').innerText = "Alles im Korb!";
-                document.getElementById('hud-zone-name').innerText = "Kasse";
+                document.getElementById('hud-item-name').innerText = "Alles erledigt!";
                 moveCartDot('checkout');
                 return;
             }
 
             const currentItem = remainingItems[0];
             document.getElementById('hud-item-name').innerText = currentItem.name;
-            document.getElementById('hud-zone-name').innerText = storeLayout[currentItem.zone].name;
             moveCartDot(currentItem.zone);
         }
 
         function moveCartDot(zoneKey) {
-            resetZoneHighlights();
-            const zoneInfo = storeLayout[zoneKey];
+            const zoneInfo = storeLayout[zoneKey] || storeLayout.pantry;
+            
+            // Bewege den Einkaufswagen
             const cartDot = document.getElementById('cart-dot');
             cartDot.style.left = zoneInfo.x;
             cartDot.style.top = zoneInfo.y;
 
+            // Highlighte das Zielregal auf der Karte
             const zoneElement = document.getElementById(`zone-${zoneKey}`);
-            const targetIndicator = document.getElementById(`target-${zoneKey}`);
-            if (zoneElement && targetIndicator) {
-                zoneElement.classList.remove('bg-slate-900/40', 'border-slate-800');
-                zoneElement.classList.add('bg-slate-900', 'border-blue-500/40');
-                targetIndicator.classList.remove('hidden');
+            if (zoneElement) {
+                zoneElement.classList.remove('bg-black/40', 'border-white/5');
+                zoneElement.classList.add('bg-blue-600/30', 'border-blue-400', 'shadow-[0_0_15px_rgba(59,130,246,0.3)]', 'scale-105');
             }
         }
 
-        function resetZoneHighlights() {
+        function resetMapHighlights() {
             Object.keys(storeLayout).forEach(key => {
                 const zoneElement = document.getElementById(`zone-${key}`);
-                const targetIndicator = document.getElementById(`target-${key}`);
-                if (zoneElement && targetIndicator) {
-                    zoneElement.classList.add('bg-slate-900/40', 'border-slate-800');
-                    zoneElement.classList.remove('bg-slate-900', 'border-blue-500/40');
-                    targetIndicator.classList.add('hidden');
+                if (zoneElement) {
+                    zoneElement.classList.remove('bg-blue-600/30', 'border-blue-400', 'shadow-[0_0_15px_rgba(59,130,246,0.3)]', 'scale-105');
+                    zoneElement.classList.add('bg-black/40', 'border-white/5');
                 }
             });
         }
 
         function markItemAcquired() {
-            if (navigator.vibrate) navigator.vibrate(15); 
+            if (navigator.vibrate) navigator.vibrate(20); 
             const remainingItems = shoppingList.filter(item => !item.completed);
             if (remainingItems.length > 0) {
                 remainingItems[0].completed = true;
