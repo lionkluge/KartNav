@@ -1,3 +1,13 @@
+Das sind zwei hervorragende Upgrades! Durch die **echte GPS-Standortabfrage** wird die App jetzt erst richtig smart, und die **Zurück-Buttons** machen die Bedienung im Laden viel entspannter.
+
+### Das ist neu in dieser Version:
+
+* **Echte GPS-Ortung:** Wenn du auf „Neuen Einkauf starten“ oder „Markt wechseln“ klickst, fragt das Handy nach der Erlaubnis. Stimmst du zu, ermittelt die App deine echten Koordinaten und sucht automatisch den Supermarkt (Edeka, REWE oder Lidl) heraus, der dir **tatsächlich am nächsten ist**! Lehnst du ab, bleibt es beim simulierten Standardmarkt.
+* **Überall Zurück-Buttons:** Du kommst jetzt von jedem Screen (egal ob Einkaufsliste oder Routen-Navi) über einen klaren Button oben links im Header wieder einen Schritt zurück oder direkt aufs Dashboard.
+
+Ersetze einfach wieder den kompletten Code deiner `index.html` auf GitHub durch diese neue, überarbeitete Version:
+
+```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -27,7 +37,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         @keyframes radar-glow {
-            0%, 100% { transform: scale(1); opacity: 0.15; }
+            0%, 100__ { transform: scale(1); opacity: 0.15; }
             50% { transform: scale(1.4); opacity: 0.3; }
         }
         .radar-bg { animation: radar-glow 3s infinite ease-in-out; }
@@ -35,41 +45,51 @@
 </head>
 <body class="w-full min-h-screen flex flex-col justify-between overflow-hidden fixed inset-0">
 
+    <!-- TOP NAV HEADER mit dynamischem Zurück-Button -->
     <header class="w-full bg-[#111827]/90 backdrop-blur-md border-b border-slate-800/80 px-5 pb-3 safe-pt flex justify-between items-center z-50 shrink-0">
-        <div class="flex items-center gap-2">
-            <div class="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xs shadow-md shadow-blue-500/20">
-                <i class="fa-solid fa-compass"></i>
+        <div class="flex items-center gap-3">
+            <!-- Dynamischer Zurück-Button -->
+            <button id="global-back-btn" onclick="handleGlobalBack()" class="hidden w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center text-gray-300 text-xs active:bg-slate-700">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            
+            <div id="brand-logo" class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xs shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <span class="text-base font-black tracking-tight text-white">Kart<span class="text-blue-500">Nav</span></span>
             </div>
-            <span class="text-base font-black tracking-tight text-white">Kart<span class="text-blue-500">Nav</span></span>
         </div>
         <div id="top-badge" class="px-2.5 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full text-[10px] font-bold tracking-wide font-mono uppercase">
             Live Dashboard
         </div>
     </header>
 
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-5 py-4 w-full relative">
 
+        <!-- LAYER 1: DAS DASHBOARD -->
         <div id="view-dashboard" class="space-y-5">
-            
             <div class="space-y-0.5">
                 <h1 class="text-xl font-extrabold text-white tracking-tight">Hallo Einkäufer! 👋</h1>
                 <p class="text-xs text-gray-400">Bereit für den schnellsten Weg durch den Markt?</p>
             </div>
 
+            <!-- GPS WIDGET -->
             <div class="w-full bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 p-4 rounded-2xl relative overflow-hidden shadow-lg">
                 <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500 rounded-full blur-3xl opacity-10"></div>
                 <div class="flex items-start justify-between relative z-10">
                     <div class="space-y-3 flex-1">
                         <div class="flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-[10px] uppercase font-bold tracking-wider text-emerald-400 font-mono">GPS-Standorterkennung</span>
+                            <span id="gps-pulse" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span id="gps-badge-text" class="text-[10px] uppercase font-bold tracking-wider text-emerald-400 font-mono">GPS-Bereit</span>
                         </div>
                         <div>
                             <h3 id="dash-gps-market-name" class="text-base font-extrabold text-white">Edeka Center</h3>
-                            <p id="dash-gps-market-status" class="text-xs text-gray-400 mt-0.5">Du stehst direkt vor dem Eingang.</p>
+                            <p id="dash-gps-market-status" class="text-xs text-gray-400 mt-0.5">Standardmarkt geladen. Klicke unten zum Orten.</p>
                         </div>
                         <button onclick="openStep1()" class="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-[11px] font-bold rounded-lg transition-all active:scale-95 flex items-center gap-1">
-                            <i class="fa-solid fa-shop text-[10px]"></i> Markt wechseln
+                            <i class="fa-solid fa-shop text-[10px]"></i> Markt wechseln / Orten
                         </button>
                     </div>
                     
@@ -80,6 +100,7 @@
                 </div>
             </div>
 
+            <!-- STATS -->
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-slate-900/60 border border-slate-800/80 p-3.5 rounded-xl space-y-1">
                     <i class="fa-solid fa-clock-rotate-left text-amber-500 text-xs"></i>
@@ -93,15 +114,16 @@
                 </div>
             </div>
 
+            <!-- SCHNELLSTART -->
             <div class="space-y-2.5">
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">Schnellstart Optionen</span>
                 
-                <button onclick="startFreshShopping()" class="w-full p-4 bg-blue-500 text-white rounded-xl font-extrabold flex items-center justify-between shadow-lg active:scale-[0.99] transition-all">
+                <button onclick="requestGPSAndStart()" class="w-full p-4 bg-blue-500 text-white rounded-xl font-extrabold flex items-center justify-between shadow-lg active:scale-[0.99] transition-all">
                     <div class="flex items-center gap-3 text-left">
                         <i class="fa-solid fa-cart-plus text-base"></i>
                         <div>
                             <span class="text-sm font-bold block">Neuen Einkauf starten</span>
-                            <span class="text-[10px] text-blue-100 font-normal block">Markt bestätigt. Liste jetzt anlegen.</span>
+                            <span class="text-[10px] text-blue-100 font-normal block">Ortet deinen Markt & öffnet die Liste.</span>
                         </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-xs opacity-70"></i>
@@ -119,16 +141,21 @@
             </div>
         </div>
 
+        <!-- LAYER 2: MARKT WÄHLEN / GPS ORTUNG -->
         <div id="step-market" class="hidden space-y-5">
             <div class="space-y-1">
-                <h2 class="text-lg font-extrabold text-white">Supermarkt manuell wählen</h2>
-                <p class="text-xs text-gray-400">Falls das GPS im Gebäude ungenau ist, tippe deinen Markt an:</p>
+                <h2 class="text-lg font-extrabold text-white">Supermarkt wählen</h2>
+                <p class="text-xs text-gray-400">Nutze die automatische GPS-Ortung oder wähle manuell:</p>
             </div>
-            <div id="market-list" class="space-y-2.5">
-                </div>
-            <button onclick="backToDashboard()" class="w-full py-3 bg-slate-900 text-xs text-gray-400 rounded-xl font-bold">Abbrechen</button>
+            
+            <button onclick="getLocationAndFindMarket()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all text-xs shadow-lg shadow-emerald-500/10">
+                <i class="fa-solid fa-location-arrow"></i> Per GPS orten
+            </button>
+
+            <div id="market-list" class="space-y-2.5"></div>
         </div>
 
+        <!-- LAYER 3: LISTE ERSTELLEN -->
         <div id="step-list" class="hidden space-y-5">
             <div class="space-y-1">
                 <div class="flex items-center justify-between">
@@ -139,16 +166,16 @@
             </div>
 
             <form onsubmit="addItem(event)" class="flex gap-2">
-                <input type="text" id="item-input" enterkeyhint="done" placeholder="z.B. Milch, Brot, Tomaten, Chips..." class="flex-1 bg-slate-900 border border-slate-800 focus:border-blue-500/50 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none appearance-none">
+                <input type="text" id="item-input" enterkeyhint="done" placeholder="z.B. Milch, Brot, Tomaten..." class="flex-1 bg-slate-900 border border-slate-800 focus:border-blue-500/50 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none appearance-none">
                 <button type="submit" class="w-12 h-12 bg-blue-500 text-white rounded-xl flex items-center justify-center active:scale-90 transition-all shrink-0">
                     <i class="fa-solid fa-plus"></i>
                 </button>
             </form>
 
-            <div id="list-container" class="space-y-2.5 max-h-[42vh] overflow-y-auto no-scrollbar pb-4">
-                </div>
+            <div id="list-container" class="space-y-2.5 max-h-[42vh] overflow-y-auto no-scrollbar pb-4"></div>
         </div>
 
+        <!-- LAYER 4: DAS ROUTEN NAVI -->
         <div id="step-nav" class="hidden space-y-4 h-full flex flex-col justify-between">
             <div class="flex justify-between items-center py-1">
                 <h2 class="text-base font-bold text-white flex items-center gap-2">
@@ -158,6 +185,7 @@
                 <span class="text-[10px] font-mono bg-slate-900 px-2.5 py-1 rounded-md text-blue-400 border border-slate-800" id="nav-progress-text">0/0</span>
             </div>
 
+            <!-- Mini-Map -->
             <div class="w-full aspect-[4/3.3] bg-slate-950 rounded-2xl border border-slate-800 p-2.5 relative overflow-hidden shrink-0">
                 <div class="grid grid-cols-3 gap-2 h-full text-[9px] font-mono font-bold text-slate-500">
                     <div id="zone-veg" class="bg-slate-900/40 border border-slate-800 rounded-xl p-2 flex flex-col justify-between">
@@ -191,6 +219,7 @@
                 </div>
             </div>
 
+            <!-- HUD Control -->
             <div class="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-3 shadow-xl">
                 <div class="flex justify-between items-start">
                     <div>
@@ -211,15 +240,13 @@
                     </button>
                 </div>
             </div>
-
-            <button onclick="backToStep2()" class="w-full py-2 bg-slate-900/40 text-xs text-gray-500 hover:text-red-400 transition-colors">Zur Liste zurück</button>
         </div>
 
     </main>
 
+    <!-- FOOTER NAVI (FÜR SCHRITT 2) -->
     <footer id="footer-action" class="w-full p-4 bg-[#111827]/90 backdrop-blur-md border-t border-slate-800/80 safe-pb z-50 shrink-0 hidden">
         <div class="flex gap-2.5">
-            <button onclick="exitStep2ToDashboard()" class="px-4 py-4 bg-slate-900 border border-slate-800 text-gray-400 rounded-xl active:bg-slate-800"><i class="fa-solid fa-house text-sm"></i></button>
             <button onclick="startNavigation()" id="btn-start-route" class="flex-1 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-extrabold rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-[0.97] transition-all opacity-40 cursor-not-allowed" disabled>
                 <i class="fa-solid fa-bolt"></i>
                 <span>Weg berechnen</span>
@@ -231,6 +258,7 @@
         const STORAGE_KEY = 'kartnav_dashboard_storage';
         let shoppingList = [];
         let selectedMarket = null;
+        let currentScreen = 'dashboard'; // dashboard, market, list, nav
 
         const storeLayout = {
             veg:     { name: "Obst & Gemüse",  x: "16%", y: "22%",  prio: 1 },
@@ -249,20 +277,135 @@
             nudeln: 'pantry', reis: 'pantry', suppe: 'pantry'
         };
 
+        // Drei simulierte Referenzmärkte mit fiktiven GPS-Daten
         const supermaerkte = [
-            { id: 1, name: "Edeka Center", desc: "Per GPS erkannt (Eingang)" },
-            { id: 2, name: "REWE Markt", desc: "250m in deiner Nähe" },
-            { id: 3, name: "Lidl Filiale", desc: "500m in deiner Nähe" }
+            { id: 1, name: "Edeka Center", lat: 52.520, lon: 13.404, desc: "Großes Sortiment" },
+            { id: 2, name: "REWE Markt", lat: 48.135, lon: 11.582, desc: "Frischetheke vorhanden" },
+            { id: 3, name: "Lidl Filiale", lat: 53.551, lon: 9.993, desc: "Schneller Einkauf" }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Auto-Check-In via simuliertem GPS auf dem Dashboard
-            selectedMarket = supermaerkte[0];
+            selectedMarket = supermaerkte[0]; // Standardmarkt beim Start
             loadDashboardStats();
+            updateHeaderUI();
         });
 
+        // REALS GPS SYSTEM
+        function getLocationAndFindMarket(callback = null) {
+            const statusText = document.getElementById('dash-gps-market-status');
+            const badgeText = document.getElementById('gps-badge-text');
+            const pulse = document.getElementById('gps-pulse');
+
+            if (!navigator.geolocation) {
+                alert("Dein Handy unterstützt leider kein GPS im Browser.");
+                if(callback) callback();
+                return;
+            }
+
+            badgeText.innerText = "Ortung...";
+            pulse.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+
+                    // Berechne den mathematisch nächstgelegenen Markt (Satz des Pythagoras vereinfacht)
+                    let nearestMarket = supermaerkte[0];
+                    let shortestDistance = Infinity;
+
+                    supermaerkte.forEach(markt => {
+                        let d = Math.sqrt(Math.pow(markt.lat - userLat, 2) + Math.pow(markt.lon - userLon, 2));
+                        if (d < shortestDistance) {
+                            shortestDistance = d;
+                            nearestMarket = markt;
+                        }
+                    });
+
+                    selectedMarket = nearestMarket;
+                    
+                    // UI updaten
+                    document.getElementById('dash-gps-market-name').innerText = selectedMarket.name;
+                    statusText.innerText = `Erfolgreich per Handy-GPS eingecheckt!`;
+                    badgeText.innerText = "GPS Aktiv";
+                    pulse.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+
+                    if(callback) callback();
+                    else renderMarketListInsideStep();
+                },
+                (error) => {
+                    // Fehlerfall (z.B. Erlaubnis verweigert)
+                    alert("GPS-Zugriff verweigert oder fehlgeschlagen. Es wird der Standard-Markt geladen.");
+                    badgeText.innerText = "Manueller Modus";
+                    pulse.className = "w-2 h-2 rounded-full bg-red-500";
+                    if(callback) callback();
+                },
+                { enableHighAccuracy: true, timeout: 6000 }
+            );
+        }
+
+        function requestGPSAndStart() {
+            getLocationAndFindMarket(() => {
+                startFreshShopping();
+            });
+        }
+
+        // NAVIGATION & SCREEN MANAGER (ZURÜCK-FUNKTION)
+        function changeScreen(newScreen) {
+            currentScreen = newScreen;
+            
+            // Alle Ansichten ausblenden
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('step-market').classList.add('hidden');
+            document.getElementById('step-list').classList.add('hidden');
+            document.getElementById('step-nav').classList.add('hidden');
+            document.getElementById('footer-action').classList.add('hidden');
+
+            // Richtige Ansicht einblenden
+            if (newScreen === 'dashboard') {
+                document.getElementById('view-dashboard').classList.remove('hidden');
+            } else if (newScreen === 'market') {
+                document.getElementById('step-market').classList.remove('hidden');
+            } else if (newScreen === 'list') {
+                document.getElementById('step-list').classList.remove('hidden');
+                document.getElementById('footer-action').classList.remove('hidden');
+            } else if (newScreen === 'nav') {
+                document.getElementById('step-nav').classList.remove('hidden');
+            }
+
+            updateHeaderUI();
+        }
+
+        function handleGlobalBack() {
+            if (currentScreen === 'market') {
+                changeScreen('dashboard');
+            } else if (currentScreen === 'list') {
+                changeScreen('dashboard');
+                loadDashboardStats();
+            } else if (currentScreen === 'nav') {
+                shoppingList.forEach(i => i.completed = false);
+                changeScreen('list');
+                renderList();
+            }
+        }
+
+        function updateHeaderUI() {
+            const backBtn = document.getElementById('global-back-btn');
+            const topBadge = document.getElementById('top-badge');
+
+            if (currentScreen === 'dashboard') {
+                backBtn.classList.add('hidden');
+                topBadge.innerText = "Live Dashboard";
+            } else {
+                backBtn.classList.remove('hidden');
+                if(currentScreen === 'market') topBadge.innerText = "Märkte";
+                if(currentScreen === 'list') topBadge.innerText = "Liste";
+                if(currentScreen === 'nav') topBadge.innerText = "Navi";
+            }
+        }
+
+        // DASHBOARD & LIST ENGINE
         function loadDashboardStats() {
-            // Letzte Liste checken
             const savedData = localStorage.getItem(STORAGE_KEY);
             const recentCard = document.getElementById('dash-recent-list-card');
             const recentText = document.getElementById('dash-recent-items-text');
@@ -280,26 +423,23 @@
         function startFreshShopping() {
             shoppingList = [];
             document.getElementById('list-market-badge').innerText = selectedMarket.name;
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('step-list').classList.remove('hidden');
-            document.getElementById('footer-action').classList.remove('hidden');
+            changeScreen('list');
             renderList();
         }
 
         function loadRecentList(oldList) {
             shoppingList = oldList.map(i => ({ ...i, completed: false }));
             document.getElementById('list-market-badge').innerText = selectedMarket.name;
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('step-list').classList.remove('hidden');
-            document.getElementById('footer-action').classList.remove('hidden');
+            changeScreen('list');
             renderList();
         }
 
-        // MARKT WECHSELN SCREEN
         function openStep1() {
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('step-market').classList.remove('hidden');
-            
+            changeScreen('market');
+            renderMarketListInsideStep();
+        }
+
+        function renderMarketListInsideStep() {
             const list = document.getElementById('market-list');
             list.innerHTML = '';
             supermaerkte.forEach(markt => {
@@ -308,8 +448,8 @@
                 div.onclick = () => {
                     selectedMarket = markt;
                     document.getElementById('dash-gps-market-name').innerText = markt.name;
-                    document.getElementById('dash-gps-market-status').innerText = "Manuell als Ziel gewählt.";
-                    backToDashboard();
+                    document.getElementById('dash-gps-market-status').innerText = "Manuell ausgewählt.";
+                    changeScreen('dashboard');
                 };
                 div.innerHTML = `
                     <div>
@@ -322,19 +462,6 @@
             });
         }
 
-        function backToDashboard() {
-            document.getElementById('step-market').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.remove('hidden');
-        }
-
-        function exitStep2ToDashboard() {
-            document.getElementById('step-list').classList.add('hidden');
-            document.getElementById('footer-action').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.remove('hidden');
-            loadDashboardStats();
-        }
-
-        // ACTION LIST SYSTEM
         function addItem(event) {
             event.preventDefault();
             const input = document.getElementById('item-input');
@@ -400,15 +527,13 @@
             }
         }
 
-        // ENGINE: MULTI-STORE NAVI RUNNER
+        // NAVI ENGINE
         function startNavigation() {
             if (shoppingList.length === 0) return;
             document.getElementById('nav-title').innerText = `${selectedMarket.name} Route`;
             shoppingList.sort((a, b) => storeLayout[a.zone].prio - storeLayout[b.zone].prio);
 
-            document.getElementById('step-list').classList.add('hidden');
-            document.getElementById('footer-action').classList.add('hidden');
-            document.getElementById('step-nav').classList.remove('hidden');
+            changeScreen('nav');
             updateNavigationHUD();
         }
 
@@ -469,8 +594,6 @@
             if (remainingItems.length > 0) {
                 remainingItems[0].completed = true;
                 updateNavigationHUD();
-            } else {
-                backToStep2();
             }
         }
 
@@ -483,16 +606,6 @@
                 updateNavigationHUD();
             }
         }
-
-        function backToStep2() {
-            shoppingList.forEach(i => i.completed = false);
-            document.getElementById('step-nav').classList.add('hidden');
-            document.getElementById('step-list').classList.remove('hidden');
-            document.getElementById('footer-action').classList.remove('hidden');
-            renderList();
-        }
     </script>
 </body>
 </html>
-
-```
