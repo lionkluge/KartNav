@@ -27,7 +27,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         @keyframes radar-glow {
-            0%, 100__ { transform: scale(1); opacity: 0.15; }
+            0%, 100% { transform: scale(1); opacity: 0.15; }
             50% { transform: scale(1.4); opacity: 0.3; }
         }
         .radar-bg { animation: radar-glow 3s infinite ease-in-out; }
@@ -35,10 +35,9 @@
 </head>
 <body class="w-full min-h-screen flex flex-col justify-between overflow-hidden fixed inset-0">
 
-    <!-- TOP NAV HEADER mit dynamischem Zurück-Button -->
+    <!-- TOP NAV HEADER -->
     <header class="w-full bg-[#111827]/90 backdrop-blur-md border-b border-slate-800/80 px-5 pb-3 safe-pt flex justify-between items-center z-50 shrink-0">
         <div class="flex items-center gap-3">
-            <!-- Dynamischer Zurück-Button -->
             <button id="global-back-btn" onclick="handleGlobalBack()" class="hidden w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center text-gray-300 text-xs active:bg-slate-700">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
@@ -152,7 +151,7 @@
                     <h2 class="text-lg font-extrabold text-white">Einkaufsliste schreiben</h2>
                     <span id="list-market-badge" class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-mono font-bold rounded">Edeka</span>
                 </div>
-                <p class="text-xs text-gray-400">Füge Produkte hinzu. KartNav sortiert sie nach Regal-Position.</p>
+                <p class="text-xs text-gray-400">Füge Produkte hinzu. KartNav korrigiert Tippfehler automatisch.</p>
             </div>
 
             <form onsubmit="addItem(event)" class="flex gap-2">
@@ -234,7 +233,7 @@
 
     </main>
 
-    <!-- FOOTER NAVI (FÜR SCHRITT 2) -->
+    <!-- FOOTER NAVI -->
     <footer id="footer-action" class="w-full p-4 bg-[#111827]/90 backdrop-blur-md border-t border-slate-800/80 safe-pb z-50 shrink-0 hidden">
         <div class="flex gap-2.5">
             <button onclick="startNavigation()" id="btn-start-route" class="flex-1 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-extrabold rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-[0.97] transition-all opacity-40 cursor-not-allowed" disabled>
@@ -248,7 +247,7 @@
         const STORAGE_KEY = 'kartnav_dashboard_storage';
         let shoppingList = [];
         let selectedMarket = null;
-        let currentScreen = 'dashboard'; // dashboard, market, list, nav
+        let currentScreen = 'dashboard';
 
         const storeLayout = {
             veg:     { name: "Obst & Gemüse",  x: "16%", y: "22%",  prio: 1 },
@@ -259,35 +258,57 @@
             checkout:{ name: "Kasse",          x: "82%", y: "62%",  prio: 6 }
         };
 
+        // Wörterbuch für Autokorrektur & Zonenzuordnung
         const productDictionary = {
-            milch: 'dairy', käse: 'dairy', joghurt: 'dairy', butter: 'dairy',
-            brot: 'bakery', brötchen: 'bakery', croissant: 'bakery', toast: 'bakery',
-            apfel: 'veg', äpfel: 'veg', banane: 'veg', bananen: 'veg', tomaten: 'veg',
-            chips: 'sweets', schokolade: 'sweets', kekse: 'sweets',
-            nudeln: 'pantry', reis: 'pantry', suppe: 'pantry'
+            'milch': { correct: 'Milch', zone: 'dairy' },
+            'milsch': { correct: 'Milch', zone: 'dairy' },
+            'käse': { correct: 'Käse', zone: 'dairy' },
+            'kaese': { correct: 'Käse', zone: 'dairy' },
+            'joghurt': { correct: 'Joghurt', zone: 'dairy' },
+            'butter': { correct: 'Butter', zone: 'dairy' },
+            'brot': { correct: 'Brot', zone: 'bakery' },
+            'brötchen': { correct: 'Brötchen', zone: 'bakery' },
+            'brotchen': { correct: 'Brötchen', zone: 'bakery' },
+            'croissant': { correct: 'Croissant', zone: 'bakery' },
+            'toast': { correct: 'Toast', zone: 'bakery' },
+            'apfel': { correct: 'Äpfel', zone: 'veg' },
+            'äpfel': { correct: 'Äpfel', zone: 'veg' },
+            'abfel': { correct: 'Äpfel', zone: 'veg' },
+            'banane': { correct: 'Bananen', zone: 'veg' },
+            'bananen': { correct: 'Bananen', zone: 'veg' },
+            'tomaten': { correct: 'Tomaten', zone: 'veg' },
+            'tomate': { correct: 'Tomaten', zone: 'veg' },
+            'chips': { correct: 'Chips', zone: 'sweets' },
+            'schokolade': { correct: 'Schokolade', zone: 'sweets' },
+            'schoki': { correct: 'Schokolade', zone: 'sweets' },
+            'kekse': { correct: 'Kekse', zone: 'sweets' },
+            'keks': { correct: 'Kekse', zone: 'sweets' },
+            'nudeln': { correct: 'Nudeln', zone: 'pantry' },
+            'nudel': { correct: 'Nudeln', zone: 'pantry' },
+            'reis': { correct: 'Reis', zone: 'pantry' },
+            'suppe': { correct: 'Suppe', zone: 'pantry' }
         };
 
-        // Drei simulierte Referenzmärkte mit fiktiven GPS-Daten
         const supermaerkte = [
-            { id: 1, name: "Edeka Center", lat: 52.520, lon: 13.404, desc: "Großes Sortiment" },
+            { id: 1, name: "Edeka Center", lat: 52.520, lon: 13.404, desc: "Simulierter Hauptmarkt" },
             { id: 2, name: "REWE Markt", lat: 48.135, lon: 11.582, desc: "Frischetheke vorhanden" },
             { id: 3, name: "Lidl Filiale", lat: 53.551, lon: 9.993, desc: "Schneller Einkauf" }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            selectedMarket = supermaerkte[0]; // Standardmarkt beim Start
+            selectedMarket = supermaerkte[0];
             loadDashboardStats();
             updateHeaderUI();
         });
 
-        // REALS GPS SYSTEM
+        // OPTIMIERTES GPS SYSTEM
         function getLocationAndFindMarket(callback = null) {
             const statusText = document.getElementById('dash-gps-market-status');
             const badgeText = document.getElementById('gps-badge-text');
             const pulse = document.getElementById('gps-pulse');
 
             if (!navigator.geolocation) {
-                alert("Dein Handy unterstützt leider kein GPS im Browser.");
+                alert("Dein Handy unterstützt kein GPS im Browser.");
                 if(callback) callback();
                 return;
             }
@@ -295,12 +316,18 @@
             badgeText.innerText = "Ortung...";
             pulse.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
 
+            // Optionen für schnellere und präzisere Handy-Ortung
+            const gpsOptions = {
+                enableHighAccuracy: true,
+                timeout: 8000,
+                maximumAge: 0
+            };
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const userLat = position.coords.latitude;
                     const userLon = position.coords.longitude;
 
-                    // Berechne den mathematisch nächstgelegenen Markt (Satz des Pythagoras vereinfacht)
                     let nearestMarket = supermaerkte[0];
                     let shortestDistance = Infinity;
 
@@ -314,7 +341,6 @@
 
                     selectedMarket = nearestMarket;
                     
-                    // UI updaten
                     document.getElementById('dash-gps-market-name').innerText = selectedMarket.name;
                     statusText.innerText = `Erfolgreich per Handy-GPS eingecheckt!`;
                     badgeText.innerText = "GPS Aktiv";
@@ -324,13 +350,16 @@
                     else renderMarketListInsideStep();
                 },
                 (error) => {
-                    // Fehlerfall (z.B. Erlaubnis verweigert)
-                    alert("GPS-Zugriff verweigert oder fehlgeschlagen. Es wird der Standard-Markt geladen.");
-                    badgeText.innerText = "Manueller Modus";
+                    let errorMsg = "Standortzugriff verweigert. Bitte erlaube GPS in den Handy-Einstellungen für diese Seite.";
+                    if (error.code === 3) errorMsg = "GPS-Zeitüberschreitung. Bitte versuche es unter offenem Himmel erneut.";
+                    
+                    alert(errorMsg);
+                    
+                    badgeText.innerText = "Standardmodus";
                     pulse.className = "w-2 h-2 rounded-full bg-red-500";
                     if(callback) callback();
                 },
-                { enableHighAccuracy: true, timeout: 6000 }
+                gpsOptions
             );
         }
 
@@ -340,18 +369,16 @@
             });
         }
 
-        // NAVIGATION & SCREEN MANAGER (ZURÜCK-FUNKTION)
+        // SCREEN & BACK MANAGER
         function changeScreen(newScreen) {
             currentScreen = newScreen;
             
-            // Alle Ansichten ausblenden
             document.getElementById('view-dashboard').classList.add('hidden');
             document.getElementById('step-market').classList.add('hidden');
             document.getElementById('step-list').classList.add('hidden');
             document.getElementById('step-nav').classList.add('hidden');
             document.getElementById('footer-action').classList.add('hidden');
 
-            // Richtige Ansicht einblenden
             if (newScreen === 'dashboard') {
                 document.getElementById('view-dashboard').classList.remove('hidden');
             } else if (newScreen === 'market') {
@@ -367,9 +394,7 @@
         }
 
         function handleGlobalBack() {
-            if (currentScreen === 'market') {
-                changeScreen('dashboard');
-            } else if (currentScreen === 'list') {
+            if (currentScreen === 'market' || currentScreen === 'list') {
                 changeScreen('dashboard');
                 loadDashboardStats();
             } else if (currentScreen === 'nav') {
@@ -394,7 +419,41 @@
             }
         }
 
-        // DASHBOARD & LIST ENGINE
+        // AUTOKORREKTUR ENGINE
+        function addItem(event) {
+            event.preventDefault();
+            const input = document.getElementById('item-input');
+            let origValue = input.value.trim();
+            if (!origValue) return;
+
+            let finalName = origValue;
+            let assignedZone = 'pantry'; 
+            
+            // Suche nach Übereinstimmung im Autokorrektur-Wörterbuch
+            const cleanSearch = origValue.toLowerCase();
+            let found = false;
+
+            for (const key in productDictionary) {
+                if (cleanSearch.includes(key)) {
+                    finalName = productDictionary[key].correct;
+                    assignedZone = productDictionary[key].zone;
+                    found = true;
+                    break;
+                }
+            }
+
+            // Wenn nichts im Wörterbuch gefunden wurde, erster Buchstabe groß
+            if(!found) {
+                finalName = origValue.charAt(0).toUpperCase() + origValue.slice(1);
+            }
+
+            shoppingList.push({ id: Date.now(), name: finalName, zone: assignedZone, completed: false });
+            input.value = '';
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(shoppingList));
+            renderList();
+        }
+
+        // DASHBOARD & LIST FUNCTIONS
         function loadDashboardStats() {
             const savedData = localStorage.getItem(STORAGE_KEY);
             const recentCard = document.getElementById('dash-recent-list-card');
@@ -450,27 +509,6 @@
                 `;
                 list.appendChild(div);
             });
-        }
-
-        function addItem(event) {
-            event.preventDefault();
-            const input = document.getElementById('item-input');
-            const value = input.value.trim();
-            if (!value) return;
-
-            let assignedZone = 'pantry';
-            const lowerVal = value.toLowerCase();
-            for (const key in productDictionary) {
-                if (lowerVal.includes(key)) {
-                    assignedZone = productDictionary[key];
-                    break;
-                }
-            }
-
-            shoppingList.push({ id: Date.now(), name: value, zone: assignedZone, completed: false });
-            input.value = '';
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(shoppingList));
-            renderList();
         }
 
         function removeItem(id) {
