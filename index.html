@@ -161,41 +161,32 @@
         </div>
 
         <div id="step-nav" class="hidden h-full flex flex-col space-y-4">
-            
             <div class="w-full flex-1 min-h-[300px] glass-card rounded-3xl relative overflow-hidden map-bg border border-white/10 p-3 flex flex-col">
-                
                 <div class="flex-1 grid grid-cols-2 gap-3 relative z-10">
-                    
                     <div id="zone-veg" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
                         <i class="fa-solid fa-carrot text-emerald-500 text-xl"></i>
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Frische</span>
                     </div>
-
                     <div id="zone-bakery" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
                         <i class="fa-solid fa-bread-slice text-amber-500 text-xl"></i>
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Backwaren</span>
                     </div>
-
                     <div id="zone-pantry" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
                         <i class="fa-solid fa-jar text-orange-400 text-xl"></i>
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Trocken</span>
                     </div>
-
                     <div id="zone-dairy" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
                         <i class="fa-solid fa-snowflake text-cyan-400 text-xl"></i>
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Kühlung</span>
                     </div>
-
                     <div id="zone-sweets" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
                         <i class="fa-solid fa-cookie text-purple-400 text-xl"></i>
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Süßes</span>
                     </div>
-
                     <div id="zone-drinks" class="rounded-2xl border border-white/5 bg-black/40 flex flex-col items-center justify-center gap-1 transition-all">
                         <i class="fa-solid fa-bottle-water text-blue-400 text-xl"></i>
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Getränke</span>
                     </div>
-
                 </div>
 
                 <div id="zone-checkout" class="h-16 mt-3 rounded-2xl border border-white/5 bg-black/40 flex items-center justify-center gap-2 transition-all z-10">
@@ -207,7 +198,6 @@
                     <i class="fa-solid fa-cart-shopping text-blue-600 text-sm"></i>
                     <div class="absolute inset-0 rounded-full border-2 border-white pulse-ring"></div>
                 </div>
-
             </div>
 
             <div class="glass-card rounded-3xl p-5 space-y-4 shrink-0 border-t border-white/10">
@@ -252,7 +242,6 @@
         let selectedMarket = null;
         let currentScreen = 'dashboard';
 
-        // Layout Koordinaten für den neuen visuellen Supermarkt (in Prozent)
         const storeLayout = {
             veg:     { name: "Frische",    x: "25%", y: "18%", prio: 1, color: "emerald", icon: "fa-carrot" },
             bakery:  { name: "Backwaren",  x: "75%", y: "18%", prio: 2, color: "amber", icon: "fa-bread-slice" },
@@ -263,10 +252,9 @@
             checkout:{ name: "Kasse",      x: "50%", y: "90%", prio: 7, color: "red", icon: "fa-cash-register" }
         };
 
-        // Erweiterte Datenbank für die smarte Autokorrektur
         const productDatabase = [
-            {name: 'Milch', zone: 'dairy'}, {name: 'Käse', zone: 'dairy'}, {name: 'Joghurt', zone: 'dairy'}, {name: 'Butter', zone: 'dairy'}, {name: 'Quark', zone: 'dairy'},
             {name: 'Brot', zone: 'bakery'}, {name: 'Brötchen', zone: 'bakery'}, {name: 'Croissant', zone: 'bakery'}, {name: 'Toast', zone: 'bakery'},
+            {name: 'Milch', zone: 'dairy'}, {name: 'Käse', zone: 'dairy'}, {name: 'Joghurt', zone: 'dairy'}, {name: 'Butter', zone: 'dairy'}, {name: 'Quark', zone: 'dairy'},
             {name: 'Apfel', zone: 'veg'}, {name: 'Bananen', zone: 'veg'}, {name: 'Tomaten', zone: 'veg'}, {name: 'Gurke', zone: 'veg'}, {name: 'Salat', zone: 'veg'}, {name: 'Kartoffeln', zone: 'veg'},
             {name: 'Chips', zone: 'sweets'}, {name: 'Schokolade', zone: 'sweets'}, {name: 'Kekse', zone: 'sweets'}, {name: 'Gummibärchen', zone: 'sweets'},
             {name: 'Nudeln', zone: 'pantry'}, {name: 'Reis', zone: 'pantry'}, {name: 'Mehl', zone: 'pantry'}, {name: 'Zucker', zone: 'pantry'}, {name: 'Kaffee', zone: 'pantry'}, {name: 'Suppe', zone: 'pantry'},
@@ -284,18 +272,15 @@
             updateHeaderUI();
         });
 
-        // ----------------------------------------------------
-        // SMARTE AUTOKORREKTUR (Levenshtein Distanz Algorithmus)
-        // ----------------------------------------------------
+        // VERBESSERTE LEVENSHTEIN-DISTANZ MIT ZEICHEN-TOLERANZ
         function getLevenshteinDistance(a, b) {
             const matrix = [];
-            let i, j;
             if (a.length === 0) return b.length;
             if (b.length === 0) return a.length;
-            for (i = 0; i <= b.length; i++) { matrix[i] = [i]; }
-            for (j = 0; j <= a.length; j++) { matrix[0][j] = j; }
-            for (i = 1; i <= b.length; i++) {
-                for (j = 1; j <= a.length; j++) {
+            for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+            for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
                     if (b.charAt(i-1) == a.charAt(j-1)) {
                         matrix[i][j] = matrix[i-1][j-1];
                     } else {
@@ -309,18 +294,18 @@
         function smartCorrectAndAssignZone(inputStr) {
             const cleanInput = inputStr.trim().toLowerCase();
             let bestMatch = null;
-            let lowestDistance = 3; // Maximale Fehler-Toleranz (z.B. Milsch = 1 Fehler zu Milch)
+            let lowestDistance = 99;
 
-            // Gehe durch die gesamte Datenbank
+            // Extra-Check für kurze Wörter wie "Brpt" -> "Brot"
             for (const product of productDatabase) {
                 const dbName = product.name.toLowerCase();
                 
-                // Exakter Treffer oder als Teilwort (z.B. "Vollmilch" -> "Milch")
+                // 1. Exakter Treffer oder Teilwort
                 if (cleanInput === dbName || cleanInput.includes(dbName)) {
-                    return { name: inputStr.charAt(0).toUpperCase() + inputStr.slice(1), zone: product.zone };
+                    return { name: product.name, zone: product.zone };
                 }
 
-                // Unscharfe Suche (Tippfehler)
+                // 2. Berechnung der mathematischen Ähnlichkeit
                 const dist = getLevenshteinDistance(cleanInput, dbName);
                 if (dist < lowestDistance) {
                     lowestDistance = dist;
@@ -328,17 +313,20 @@
                 }
             }
 
-            // Wenn ein sehr ähnliches Wort gefunden wurde, ersetze es
-            if (bestMatch) {
+            // Wenn das Wort kurz ist (<= 5 Buchstaben), erlauben wir max. 2 Fehler (z.B. Brpt -> Brot = 1 Fehler)
+            // Bei längeren Wörtern erlauben wir eine Distanz von bis zu 3 Fehlern.
+            const allowedTolerance = cleanInput.length <= 5 ? 2 : 3;
+
+            if (bestMatch && lowestDistance <= allowedTolerance) {
                 return { name: bestMatch.name, zone: bestMatch.zone };
             }
 
-            // Falls es völlig unbekannt ist, erster Buchstabe groß & ab ins Trockensortiment
+            // Fallback für komplett unbekannte Kreationen
             return { name: inputStr.charAt(0).toUpperCase() + inputStr.slice(1), zone: 'pantry' };
         }
 
         // ----------------------------------------------------
-        // GPS & SCREEN MANAGEMENT
+        // GPS & APP MOTOR
         // ----------------------------------------------------
         function getLocationAndFindMarket(callback = null) {
             const statusText = document.getElementById('dash-gps-market-status');
@@ -346,7 +334,7 @@
             const pulse = document.getElementById('gps-pulse');
 
             if (!navigator.geolocation) {
-                alert("GPS wird nicht unterstützt.");
+                alert("GPS nicht unterstützt.");
                 if(callback) callback(); return;
             }
 
@@ -355,7 +343,7 @@
 
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    selectedMarket = supermaerkte[Math.floor(Math.random() * supermaerkte.length)]; // Simuliert gefunden
+                    selectedMarket = supermaerkte[Math.floor(Math.random() * supermaerkte.length)];
                     document.getElementById('dash-gps-market-name').innerText = selectedMarket.name;
                     statusText.innerText = "Position bestätigt.";
                     badgeText.innerText = "Verbunden";
@@ -364,7 +352,6 @@
                     else renderMarketListInsideStep();
                 },
                 (error) => {
-                    alert("GPS-Fehler. Manuelle Auswahl wird genutzt.");
                     badgeText.innerText = "Offline";
                     pulse.className = "w-2 h-2 rounded-full bg-red-500";
                     if(callback) callback();
@@ -450,16 +437,12 @@
             });
         }
 
-        // ----------------------------------------------------
-        // LISTE & ITEMS
-        // ----------------------------------------------------
         function addItem(event) {
             event.preventDefault();
             const input = document.getElementById('item-input');
             const rawValue = input.value.trim();
             if (!rawValue) return;
 
-            // Hier feuert die magische Autokorrektur!
             const result = smartCorrectAndAssignZone(rawValue);
 
             shoppingList.push({ id: Date.now(), name: result.name, zone: result.zone, completed: false });
@@ -502,16 +485,10 @@
             });
 
             const btn = document.getElementById('btn-start-route');
-            if (shoppingList.length > 0) {
-                btn.removeAttribute('disabled');
-            } else {
-                btn.setAttribute('disabled', 'true');
-            }
+            if (shoppingList.length > 0) btn.removeAttribute('disabled');
+            else btn.setAttribute('disabled', 'true');
         }
 
-        // ----------------------------------------------------
-        // DAS NEUE NAVIGATIONSSYSTEM
-        // ----------------------------------------------------
         function startNavigation() {
             if (shoppingList.length === 0) return;
             shoppingList.sort((a, b) => (storeLayout[a.zone]?.prio || 99) - (storeLayout[b.zone]?.prio || 99));
@@ -541,13 +518,10 @@
 
         function moveCartDot(zoneKey) {
             const zoneInfo = storeLayout[zoneKey] || storeLayout.pantry;
-            
-            // Bewege den Einkaufswagen
             const cartDot = document.getElementById('cart-dot');
             cartDot.style.left = zoneInfo.x;
             cartDot.style.top = zoneInfo.y;
 
-            // Highlighte das Zielregal auf der Karte
             const zoneElement = document.getElementById(`zone-${zoneKey}`);
             if (zoneElement) {
                 zoneElement.classList.remove('bg-black/40', 'border-white/5');
@@ -564,6 +538,10 @@
                 }
             });
         }
+
+        document.getElementById('item-input').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') { e.preventDefault(); addItem(e); }
+        });
 
         function markItemAcquired() {
             if (navigator.vibrate) navigator.vibrate(20); 
